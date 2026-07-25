@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chitra&nbsp;Yantra — Vedic &amp; Mundane Astrology Research Platform</title>
+<meta name="description" content="Sidereal Vedic birth chart generator for mundane, financial, and historical astrological research." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<div class="starfield" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__brand">
+    <span class="topbar__glyph">&#9737;</span>
+    <div class="topbar__title">
+      <span class="topbar__name">CHITRA YANTRA</span>
+      <span class="topbar__sub">Vedic &amp; Mundane Research Terminal</span>
+    </div>
+  </div>
+  <nav class="topbar__nav">
+    <a href="/index.html" class="topbar__link topbar__link--active">Birth Chart</a>
+    <a href="#" class="topbar__link topbar__link--soon" title="Coming next">Transit Dashboard</a>
+    <a href="#" class="topbar__link topbar__link--soon" title="Coming next">Countries</a>
+    <a href="#" class="topbar__link topbar__link--soon" title="Coming next">Mundane Research</a>
+    <a href="#" class="topbar__link topbar__link--soon" title="Coming next">Reports</a>
+  </nav>
+  <div class="topbar__clock">
+    <div class="clock__row"><span class="clock__label">UTC</span><span class="clock__value" id="clockUTC">--:--:--</span></div>
+    <div class="clock__row"><span class="clock__label">GAST</span><span class="clock__value" id="clockGAST">--:--:--</span></div>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- ============ INPUT PANEL ============ -->
+  <section class="panel panel--form" aria-label="Birth data input">
+    <h1 class="panel__title">Birth Chart Generator</h1>
+    <p class="panel__note">Sidereal (Lahiri) calculation for research use — not personal predictions.</p>
+
+    <form id="chartForm" autocomplete="off">
+      <div class="field">
+        <label for="place">Birth place</label>
+        <input type="text" id="place" name="place" placeholder="e.g. Kolkata, India" required />
+        <div class="field__hint" id="placeHint">Start typing, then choose a match.</div>
+        <div class="matches" id="placeMatches" hidden></div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="dob">Date</label>
+          <input type="date" id="dob" name="dob" required />
+        </div>
+        <div class="field">
+          <label for="tob">Time (24h)</label>
+          <input type="time" id="tob" name="tob" step="1" required />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="lat">Latitude</label>
+          <input type="number" id="lat" name="lat" step="0.000001" placeholder="auto" required />
+        </div>
+        <div class="field">
+          <label for="lon">Longitude</label>
+          <input type="number" id="lon" name="lon" step="0.000001" placeholder="auto" required />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="timezone">Timezone (IANA)</label>
+        <input type="text" id="timezone" name="timezone" placeholder="auto — e.g. Asia/Kolkata" required />
+      </div>
+
+      <div class="field">
+        <label>Chart style</label>
+        <div class="toggle" id="styleToggle">
+          <button type="button" class="toggle__opt toggle__opt--active" data-style="north">North Indian</button>
+          <button type="button" class="toggle__opt" data-style="south">South Indian</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" id="calcBtn">
+        <span>Calculate Chart</span>
+      </button>
+      <div class="form__error" id="formError" hidden></div>
+    </form>
+  </section>
+
+  <!-- ============ RESULT PANEL ============ -->
+  <section class="panel panel--result" aria-label="Chart output">
+    <div class="result__empty" id="resultEmpty">
+      <div class="empty__ring"></div>
+      <p>Enter a birth place, date and time to generate the chart.</p>
+    </div>
+
+    <div class="result__content" id="resultContent" hidden>
+
+      <div class="summary" id="summaryBar"></div>
+
+      <div class="chart-tabs">
+        <button type="button" class="chart-tab chart-tab--active" data-chart="rasi">Rāśi (D1)</button>
+        <button type="button" class="chart-tab" data-chart="navamsa">Navāṁśa (D9)</button>
+      </div>
+
+      <div class="chart-wrap">
+        <svg id="chartSvg" viewBox="0 0 300 300" class="chart-svg"></svg>
+      </div>
+
+      <h2 class="table__title">Planetary Positions <span class="table__title-sub">Sidereal · Lahiri Ayanāṁśa</span></h2>
+      <div class="table-wrap">
+        <table class="data-table" id="planetTable">
+          <thead>
+            <tr>
+              <th>Graha</th><th>Rāśi</th><th>Degree</th><th>House</th><th>Nakṣatra</th><th>Pada</th><th>Navāṁśa</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="meta-strip" id="metaStrip"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>Ephemeris: astronomy-engine (pure JS) · Ayanāṁśa: Lahiri (Chitrapakṣa) · Houses: Whole Sign</span>
+  <span>For mundane / research purposes. Not a substitute for classical Shadbala or professional consultation.</span>
+</footer>
+
+<script src="/js/chart-render.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
