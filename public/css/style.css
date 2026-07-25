@@ -224,8 +224,8 @@ input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate
 /* ---------------- Chart SVG elements (injected) ---------------- */
 .house-line { stroke: var(--hairline-strong); stroke-width: 1; fill: none; }
 .house-outline { stroke: var(--brass); stroke-width: 1.4; fill: none; }
-.house-sign { font-family: var(--font-mono); font-size: 8px; fill: var(--text-faint); }
-.house-planets { font-family: var(--font-mono); font-size: 9.5px; fill: var(--text); }
+.house-sign { font-family: var(--font-mono); font-size: 11px; font-weight: 600; fill: var(--brass); }
+.house-planets { font-family: var(--font-mono); font-size: 9px; fill: var(--text); }
 .house-planets tspan.retro { fill: var(--red); }
 .house-asc-marker { fill: var(--brass-bright); }
 .grid-cell { stroke: var(--hairline-strong); stroke-width: 1; fill: rgba(201,164,106,0.02); }
