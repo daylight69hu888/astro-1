@@ -144,6 +144,14 @@
 
       lastChart = data.chart;
       renderResult(data);
+      try {
+        localStorage.setItem('chitraYantra.lastBirthChart', JSON.stringify({
+          savedAt: new Date().toISOString(),
+          input: data.input,
+          utcInstant: data.utcInstant,
+          chart: data.chart,
+        }));
+      } catch (e) { /* storage unavailable — non-fatal, chart still renders here */ }
     } catch (err) {
       formError.textContent = err.message;
       formError.hidden = false;

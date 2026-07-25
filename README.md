@@ -70,14 +70,20 @@ This serves the frontend and runs the functions locally at `http://localhost:888
 ## Roadmap (per your original 8-module spec)
 
 1. ✅ Birth Chart Generator
-2. Live Transit Dashboard — reuses `vedic-core.js` directly, just calls it with "now" and adds an
-   ingress/conjunction scanner
+2. ✅ Live Transit Dashboard — Chandra Lagna (Moon-chart) based, not Ascendant-based. Auto-loads
+   the natal Moon from whatever chart you last generated in Module 1 (saved to the browser's
+   `localStorage`, key `chitraYantra.lastBirthChart` — nothing leaves your device for this).
+   No saved chart yet? You can set any Moon sign manually, which also makes this useful for
+   pure mundane research unconnected to a specific birth. Planetary positions are geocentric
+   (location-independent) — only the birth chart module needs lat/lon/timezone.
 3. Country Horoscope Database — needs Supabase/Neon Postgres; schema can reuse the chart JSON shape
 4. Mundane Astrology Research — structured notes UI over the transit engine
 5. Reports (half-year/yearly, PDF export) — generate from the transit scanner + a PDF library
 6. Historical Research — same engine, just a date picker with a "compare to today" view
-7. Calendar — derived from the same ingress/retrograde/eclipse scan as Module 2
+7. Calendar — derived from the same ingress/retrograde/eclipse scan as Module 2 (conjunction/ingress
+   scanning isn't built yet — Module 2 currently shows a single moment's positions, not a scan
+   across a date range; that scanner is the natural next addition before Reports/Calendar)
 8. Search — once 3/5/6 have a database, this is a query layer over it
 
-Say the word when you want to move to Module 2 (Transit Dashboard) — it shares almost all of its
-code with what's already built here.
+Say the word when you want to move to Module 3 (Country Horoscope Database) or the ingress/
+conjunction scanner that Modules 5 and 7 will lean on.

@@ -191,6 +191,33 @@ input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate
 }
 .chart-tab--active { color: var(--brass-bright); background: rgba(201,164,106,0.1); border-color: var(--brass); }
 
+.btn-secondary {
+  width: 100%; background: transparent; color: var(--brass); border: 1px solid var(--hairline-strong);
+  font-family: var(--font-body); font-size: 12.5px; padding: 10px; border-radius: var(--radius); cursor: pointer;
+}
+.btn-secondary:hover { border-color: var(--brass); background: rgba(201,164,106,0.06); }
+
+.natal-box {
+  border: 1px solid var(--hairline-strong); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 18px;
+  background: var(--panel-raised);
+}
+.natal-box__empty p { margin: 0 0 8px; font-size: 12.5px; color: var(--text-dim); }
+.natal-box__link { display: inline-block; margin-bottom: 10px; font-size: 12.5px; color: var(--brass-bright); text-decoration: none; }
+.natal-box__link:hover { text-decoration: underline; }
+.natal-box__or { font-size: 11px; color: var(--text-faint); margin: 10px 0 8px !important; }
+.natal-box__select {
+  width: 100%; background: var(--void); border: 1px solid var(--hairline-strong); color: var(--text);
+  font-family: var(--font-mono); font-size: 13px; padding: 9px 10px; border-radius: var(--radius);
+}
+.natal-box__loaded { display: flex; flex-direction: column; gap: 6px; }
+.natal-box__label { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
+.natal-box__value { font-family: var(--font-mono); font-size: 15px; color: var(--brass-bright); }
+.natal-box__clear {
+  align-self: flex-start; background: transparent; border: none; color: var(--text-faint);
+  font-size: 11px; text-decoration: underline; cursor: pointer; padding: 0; margin-top: 4px;
+}
+.natal-box__clear:hover { color: var(--text-dim); }
+
 .lagna-note { font-size: 11px; color: var(--text-faint); margin-bottom: 10px; font-family: var(--font-mono); }
 
 .chart-wrap {
