@@ -191,6 +191,8 @@ input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate
 }
 .chart-tab--active { color: var(--brass-bright); background: rgba(201,164,106,0.1); border-color: var(--brass); }
 
+.lagna-note { font-size: 11px; color: var(--text-faint); margin-bottom: 10px; font-family: var(--font-mono); }
+
 .chart-wrap {
   display: flex; justify-content: center; align-items: center;
   background: radial-gradient(ellipse at center, rgba(201,164,106,0.05), transparent 70%);

@@ -85,8 +85,14 @@ function drawPlanetBlock(svg, cx, cy, lines, perRow) {
   svg.appendChild(textEl);
 }
 
-function groupPlanetsByHouse(chart, useNavamsa) {
-  const ascSignIdx = chart.ascendant.signIndex;
+// The D1 (Rāśi) chart is built around the birth Ascendant's sign.
+// The D9 (Navāṁśa) chart must be built around the separately-calculated
+// Navāṁśa Lagna (chart.ascendant.navamsaSignIndex) — NOT the same sign.
+function ascendantSignForMode(chart, useNavamsa) {
+  return useNavamsa ? chart.ascendant.navamsaSignIndex : chart.ascendant.signIndex;
+}
+
+function groupPlanetsByHouse(chart, useNavamsa, ascSignIdx) {
   const byHouse = {};
   for (let h = 1; h <= 12; h++) byHouse[h] = [];
   chart.planets.forEach((p) => {
@@ -100,14 +106,14 @@ function groupPlanetsByHouse(chart, useNavamsa) {
 
 function renderNorthIndian(svg, chart, useNavamsa) {
   svg.innerHTML = '';
-  const ascSignIdx = chart.ascendant.signIndex;
+  const ascSignIdx = ascendantSignForMode(chart, useNavamsa);
 
   Object.values(NI_HOUSES).forEach((pts) => {
     svg.appendChild(svgEl('polygon', { points: polyPoints(pts), class: 'house-line' }));
   });
   svg.appendChild(svgEl('rect', { x: 0, y: 0, width: 300, height: 300, class: 'house-outline' }));
 
-  const byHouse = groupPlanetsByHouse(chart, useNavamsa);
+  const byHouse = groupPlanetsByHouse(chart, useNavamsa, ascSignIdx);
 
   for (let wedge = 1; wedge <= 12; wedge++) {
     const logicalHouse = NI_MIRROR[wedge];
@@ -133,8 +139,8 @@ function renderNorthIndian(svg, chart, useNavamsa) {
 
 function renderSouthIndian(svg, chart, useNavamsa) {
   svg.innerHTML = '';
-  const ascSignIdx = chart.ascendant.signIndex;
-  const byHouse = groupPlanetsByHouse(chart, useNavamsa);
+  const ascSignIdx = ascendantSignForMode(chart, useNavamsa);
+  const byHouse = groupPlanetsByHouse(chart, useNavamsa, ascSignIdx);
 
   for (let row = 0; row < 4; row++) {
     for (let col = 0; col < 4; col++) {

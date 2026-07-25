@@ -105,7 +105,14 @@
   });
 
   function redraw() {
-    window.VedicChartRender.renderChart(chartSvg, lastChart, currentChartStyle, currentDivision === 'navamsa');
+    const useNavamsa = currentDivision === 'navamsa';
+    window.VedicChartRender.renderChart(chartSvg, lastChart, currentChartStyle, useNavamsa);
+    const lagnaNote = document.getElementById('lagnaNote');
+    if (lagnaNote) {
+      lagnaNote.textContent = useNavamsa
+        ? `Built around the Navāṁśa Lagna: ${lastChart.ascendant.navamsaSign}`
+        : `Built around the Rāśi Ascendant: ${lastChart.ascendant.sign} ${fmtDeg(lastChart.ascendant.degreeInSign)}`;
+    }
   }
 
   // ---------- Submit ----------

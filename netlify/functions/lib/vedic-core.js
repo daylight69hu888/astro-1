@@ -212,6 +212,7 @@ function computeChart(utcDate, latDeg, lonDeg) {
   });
 
   const ascNak = nakshatraOf(ascendantSidereal);
+  const ascNavamsaSignIdx = navamsaSignIndex(ascendantSidereal);
 
   return {
     meta: {
@@ -230,6 +231,9 @@ function computeChart(utcDate, latDeg, lonDeg) {
       degreeInSign: degInSign(ascendantSidereal),
       nakshatra: ascNak.name,
       nakshatraPada: ascNak.pada,
+      // Navamsa Lagna (D9 ascendant) — the D9 chart is built around THIS sign, not signIndex above.
+      navamsaSign: SIGNS[ascNavamsaSignIdx],
+      navamsaSignIndex: ascNavamsaSignIdx,
     },
     planets,
   };
