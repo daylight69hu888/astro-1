@@ -258,4 +258,49 @@ function computeChart(utcDate, latDeg, lonDeg) {
   };
 }
 
-module.exports = { computeChart, SIGNS, SIGN_ABBR, NAKSHATRAS, norm360 };
+/**
+ * Lightweight planet-only snapshot (no Ascendant/houses) — used by the event
+ * scanner, which needs to evaluate many timestamps quickly across a date range.
+ */
+function getPlanetSnapshot(utcDate) {
+  const astroTime = Astronomy.MakeTime(utcDate);
+  const jdTT = astroTime.tt + 2451545.0;
+  const ayanamsa = lahiriAyanamsa(jdTT);
+  const sunTropicalLon = geoEclipticLon('Sun', astroTime);
+  const sunSidereal = norm360(sunTropicalLon - ayanamsa);
+
+  const results = BODIES.map(({ key, name }) => {
+    const tropicalLon = geoEclipticLon(key, astroTime);
+    const siderealLon = norm360(tropicalLon - ayanamsa);
+    const signIdx = signOf(siderealLon);
+    const retro = isRetrograde(key, astroTime);
+    let combust = false;
+    if (COMBUST_ORB[name]) {
+      const orb = retro ? COMBUST_ORB[name].retro : COMBUST_ORB[name].direct;
+      combust = name !== 'Sun' && angularSep(siderealLon, sunSidereal) <= orb;
+    }
+    const nak = nakshatraOf(siderealLon);
+    return {
+      name, longitude: siderealLon, signIndex: signIdx, sign: SIGNS[signIdx], retrograde: retro, combust,
+      nakshatra: nak.name, nakshatraIndex: nak.index, nakshatraPada: nak.pada, nakshatraLord: nak.lord,
+    };
+  });
+
+  const rahuTropical = meanNodeLongitude(jdTT);
+  const rahuSidereal = norm360(rahuTropical - ayanamsa);
+  const ketuSidereal = norm360(rahuSidereal + 180);
+  const rahuNak = nakshatraOf(rahuSidereal);
+  const ketuNak = nakshatraOf(ketuSidereal);
+  results.push({
+    name: 'Rahu', longitude: rahuSidereal, signIndex: signOf(rahuSidereal), sign: SIGNS[signOf(rahuSidereal)], retrograde: true, combust: false,
+    nakshatra: rahuNak.name, nakshatraIndex: rahuNak.index, nakshatraPada: rahuNak.pada, nakshatraLord: rahuNak.lord,
+  });
+  results.push({
+    name: 'Ketu', longitude: ketuSidereal, signIndex: signOf(ketuSidereal), sign: SIGNS[signOf(ketuSidereal)], retrograde: true, combust: false,
+    nakshatra: ketuNak.name, nakshatraIndex: ketuNak.index, nakshatraPada: ketuNak.pada, nakshatraLord: ketuNak.lord,
+  });
+
+  return results;
+}
+
+module.exports = { computeChart, getPlanetSnapshot, SIGNS, SIGN_ABBR, NAKSHATRAS, norm360 };
