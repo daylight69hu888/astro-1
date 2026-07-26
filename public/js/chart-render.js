@@ -61,10 +61,15 @@ function farthestVertex(pts, c) {
 function lerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; }
 
 function planetGlyphLine(planetsHere) {
-  return planetsHere.map((p) => ({
-    text: p.abbr + (p.retrograde ? '(R)' : '') + (p.combust ? '*' : ''),
-    retro: p.retrograde,
-  }));
+  return planetsHere.map((p) => {
+    let dignityMark = '';
+    if (p.dignity === 'Exalted') dignityMark = '\u2191';       // ↑
+    else if (p.dignity === 'Debilitated') dignityMark = '\u2193'; // ↓
+    return {
+      text: p.abbr + dignityMark + (p.retrograde ? '(R)' : '') + (p.combust ? '*' : ''),
+      retro: p.retrograde,
+    };
+  });
 }
 
 function drawPlanetBlock(svg, cx, cy, lines, perRow) {
@@ -99,7 +104,14 @@ function groupPlanetsByHouse(chart, useNavamsa, ascSignIdx) {
     const h = useNavamsa
       ? (((p.navamsaSignIndex - ascSignIdx + 12) % 12) + 1)
       : p.house;
-    byHouse[h].push({ abbr: PLANET_ABBR[p.name] || p.name.slice(0, 2), retrograde: p.retrograde, combust: p.combust });
+    // Navāṁśa dignity would need its own exaltation/debilitation table (a planet's
+    // dignity is sign-specific), so the ↑/↓ marks only apply to the Rāśi (D1) view.
+    byHouse[h].push({
+      abbr: PLANET_ABBR[p.name] || p.name.slice(0, 2),
+      retrograde: p.retrograde,
+      combust: p.combust,
+      dignity: useNavamsa ? null : p.dignity,
+    });
   });
   return byHouse;
 }

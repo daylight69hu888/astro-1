@@ -8,6 +8,23 @@ const Astronomy = require('astronomy-engine');
 const SIGNS = ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
 const SIGN_ABBR = ['Ar','Ta','Ge','Cn','Le','Vi','Li','Sc','Sg','Cp','Aq','Pi'];
 
+// Classical dignity — fixed sign-level exaltation/debilitation/rulership, independent
+// of the chart. Only defined for the 7 classical grahas; Rahu/Ketu dignity is disputed
+// across traditions, so it's deliberately left unset rather than asserted.
+const EXALTATION_SIGN = { Sun: 'Aries', Moon: 'Taurus', Mars: 'Capricorn', Mercury: 'Virgo', Jupiter: 'Cancer', Venus: 'Pisces', Saturn: 'Libra' };
+const DEBILITATION_SIGN = { Sun: 'Libra', Moon: 'Scorpio', Mars: 'Cancer', Mercury: 'Pisces', Jupiter: 'Capricorn', Venus: 'Virgo', Saturn: 'Aries' };
+const OWN_SIGNS = {
+  Sun: ['Leo'], Moon: ['Cancer'], Mars: ['Aries', 'Scorpio'], Mercury: ['Gemini', 'Virgo'],
+  Jupiter: ['Sagittarius', 'Pisces'], Venus: ['Taurus', 'Libra'], Saturn: ['Capricorn', 'Aquarius'],
+};
+function dignityOf(planetName, sign) {
+  if (EXALTATION_SIGN[planetName] === sign) return 'Exalted';
+  if (DEBILITATION_SIGN[planetName] === sign) return 'Debilitated';
+  if (OWN_SIGNS[planetName] && OWN_SIGNS[planetName].includes(sign)) return 'Own Sign';
+  if (EXALTATION_SIGN[planetName]) return 'Neutral'; // one of the 7 classical grahas, just unremarkable placement
+  return null; // Rahu/Ketu — not scored
+}
+
 const NAKSHATRAS = [
   'Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha',
   'Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha',
@@ -180,6 +197,7 @@ function computeChart(utcDate, latDeg, lonDeg) {
       navamsaSignIndex: navSignIdx,
       retrograde: retro,
       combust,
+      dignity: dignityOf(name, SIGNS[signIdx]),
     };
   });
 
@@ -208,6 +226,7 @@ function computeChart(utcDate, latDeg, lonDeg) {
       navamsaSignIndex: navSignIdx,
       retrograde: true, // mean node regresses essentially continuously
       combust: false,
+      dignity: null,
     });
   });
 

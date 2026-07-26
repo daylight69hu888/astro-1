@@ -76,7 +76,11 @@ This serves the frontend and runs the functions locally at `http://localhost:888
    No saved chart yet? You can set any Moon sign manually, which also makes this useful for
    pure mundane research unconnected to a specific birth. Planetary positions are geocentric
    (location-independent) — only the birth chart module needs lat/lon/timezone.
-3. Country Horoscope Database — needs Supabase/Neon Postgres; schema can reuse the chart JSON shape
+3. ✅ Country Horoscope Database — 5 built-in national charts (India, USA, Russia, Pakistan, China),
+   sourced from standard mundane-astrology references. Custom countries you add are saved to
+   `localStorage` (key `chitraYantra.customCountries`) — no database yet, so they're per-browser
+   for now. A real Supabase/Neon-backed version (shared, admin-manageable) is still on the list
+   below when you want multi-device / shared country data.
 4. Mundane Astrology Research — structured notes UI over the transit engine
 5. Reports (half-year/yearly, PDF export) — generate from the transit scanner + a PDF library
 6. Historical Research — same engine, just a date picker with a "compare to today" view

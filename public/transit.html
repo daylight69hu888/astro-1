@@ -24,7 +24,7 @@
   <nav class="topbar__nav">
     <a href="/index.html" class="topbar__link">Birth Chart</a>
     <a href="/transit.html" class="topbar__link topbar__link--active">Transit Dashboard</a>
-    <a href="#" class="topbar__link topbar__link--soon" title="Coming next">Countries</a>
+    <a href="/countries.html" class="topbar__link">Countries</a>
     <a href="#" class="topbar__link topbar__link--soon" title="Coming next">Mundane Research</a>
     <a href="#" class="topbar__link topbar__link--soon" title="Coming next">Reports</a>
   </nav>
@@ -95,13 +95,20 @@
       <div class="chart-wrap">
         <svg id="chartSvg" viewBox="0 0 300 300" class="chart-svg"></svg>
       </div>
+      <div class="chart-legend">
+        <span><span class="retro">(R)</span> Retrograde</span>
+        <span>* Combust</span>
+        <span class="exalted">&#8593;</span><span> Exalted</span>
+        <span class="debilitated">&#8595;</span><span> Debilitated</span>
+      </div>
+
 
       <h2 class="table__title">Transiting Planets <span class="table__title-sub">Sidereal · Lahiri Ayanāṁśa · from Chandra Lagna</span></h2>
       <div class="table-wrap">
         <table class="data-table" id="planetTable">
           <thead>
             <tr>
-              <th>Graha</th><th>Rāśi</th><th>Degree</th><th>House from Moon</th><th>Nakṣatra</th><th>Pada</th><th>Status</th>
+              <th>Graha</th><th>Rāśi</th><th>Degree</th><th>House from Moon</th><th>Nakṣatra</th><th>Pada</th><th>Dignity</th><th>Status</th>
             </tr>
           </thead>
           <tbody></tbody>

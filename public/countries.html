@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Countries — Chitra Yantra</title>
+<meta name="description" content="National foundation charts for mundane astrology research — India, USA, Russia, Pakistan, China, and any country you add." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<div class="starfield" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__brand">
+    <span class="topbar__glyph">&#9737;</span>
+    <div class="topbar__title">
+      <span class="topbar__name">CHITRA YANTRA</span>
+      <span class="topbar__sub">Vedic &amp; Mundane Research Terminal</span>
+    </div>
+  </div>
+  <nav class="topbar__nav">
+    <a href="/index.html" class="topbar__link">Birth Chart</a>
+    <a href="/transit.html" class="topbar__link">Transit Dashboard</a>
+    <a href="/countries.html" class="topbar__link topbar__link--active">Countries</a>
+    <a href="#" class="topbar__link topbar__link--soon" title="Coming next">Mundane Research</a>
+    <a href="#" class="topbar__link topbar__link--soon" title="Coming next">Reports</a>
+  </nav>
+  <div class="topbar__clock">
+    <div class="clock__row"><span class="clock__label">UTC</span><span class="clock__value" id="clockUTC">--:--:--</span></div>
+    <div class="clock__row"><span class="clock__label">GAST</span><span class="clock__value" id="clockGAST">--:--:--</span></div>
+  </div>
+</header>
+
+<main class="layout layout--countries">
+
+  <!-- ============ COUNTRY LIST ============ -->
+  <section class="panel panel--form" aria-label="Country list">
+    <h1 class="panel__title">National Charts</h1>
+    <p class="panel__note">Foundation (natal) charts for mundane research. Where astrologers disagree on the correct moment, that's noted per country.</p>
+
+    <div class="country-list" id="countryList"></div>
+
+    <button type="button" class="btn-secondary" id="addCountryToggle" style="margin-top: 16px;">+ Add another country</button>
+
+    <form id="addCountryForm" class="add-country-form" hidden>
+      <div class="field">
+        <label for="ccName">Country / entity name</label>
+        <input type="text" id="ccName" placeholder="e.g. Bangladesh" required />
+      </div>
+      <div class="field">
+        <label for="ccPlace">Founding place</label>
+        <input type="text" id="ccPlace" placeholder="e.g. Dhaka, Bangladesh" required />
+        <div class="field__hint" id="ccPlaceHint">Start typing, then choose a match.</div>
+        <div class="matches" id="ccPlaceMatches" hidden></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="ccDate">Date</label><input type="date" id="ccDate" required /></div>
+        <div class="field"><label for="ccTime">Time (24h)</label><input type="time" id="ccTime" step="1" required /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label for="ccLat">Latitude</label><input type="number" id="ccLat" step="0.000001" required /></div>
+        <div class="field"><label for="ccLon">Longitude</label><input type="number" id="ccLon" step="0.000001" required /></div>
+      </div>
+      <div class="field">
+        <label for="ccTz">Timezone (IANA)</label>
+        <input type="text" id="ccTz" placeholder="auto" required />
+      </div>
+      <button type="submit" class="btn-primary"><span>Add & Calculate</span></button>
+      <div class="form__error" id="ccError" hidden></div>
+    </form>
+
+    <div class="field" style="margin-top: 20px;">
+      <label>Chart style</label>
+      <div class="toggle" id="styleToggle">
+        <button type="button" class="toggle__opt toggle__opt--active" data-style="north">North Indian</button>
+        <button type="button" class="toggle__opt" data-style="south">South Indian</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULT PANEL ============ -->
+  <section class="panel panel--result" aria-label="National chart output">
+    <div class="result__empty" id="resultEmpty">
+      <div class="empty__ring"></div>
+      <p>Select a country to view its national chart.</p>
+    </div>
+
+    <div class="result__content" id="resultContent" hidden>
+      <div class="country-header" id="countryHeader"></div>
+      <div class="summary" id="summaryBar"></div>
+
+      <div class="chart-wrap">
+        <svg id="chartSvg" viewBox="0 0 300 300" class="chart-svg"></svg>
+      </div>
+      <div class="chart-legend">
+        <span><span class="retro">(R)</span> Retrograde</span>
+        <span>* Combust</span>
+        <span class="exalted">&#8593;</span><span> Exalted</span>
+        <span class="debilitated">&#8595;</span><span> Debilitated</span>
+      </div>
+
+
+      <h2 class="table__title">Planetary Positions <span class="table__title-sub">Sidereal · Lahiri Ayanāṁśa</span></h2>
+      <div class="table-wrap">
+        <table class="data-table" id="planetTable">
+          <thead>
+            <tr><th>Graha</th><th>Rāśi</th><th>Degree</th><th>House</th><th>Nakṣatra</th><th>Pada</th><th>Dignity</th><th>Status</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="meta-strip" id="metaStrip"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>Ephemeris: astronomy-engine (pure JS) · Ayanāṁśa: Lahiri (Chitrapakṣa) · Houses: Whole Sign</span>
+  <span>Custom countries are saved to this browser only (localStorage) — not shared or uploaded anywhere.</span>
+</footer>
+
+<script src="/js/chart-render.js"></script>
+<script src="/js/countries-data.js"></script>
+<script src="/js/countries.js"></script>
+</body>
+</html>

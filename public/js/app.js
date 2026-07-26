@@ -196,6 +196,7 @@
         p.retrograde ? '<span class="status-tag status-tag--retro">R</span>' : '',
         p.combust ? '<span class="status-tag status-tag--combust">Combust</span>' : '',
       ].join('');
+      const dignityClass = p.dignity === 'Exalted' ? 'dignity-exalted' : p.dignity === 'Debilitated' ? 'dignity-debilitated' : p.dignity === 'Own Sign' ? 'dignity-own' : '';
       tr.innerHTML = `
         <td>${p.name}</td>
         <td>${p.sign}</td>
@@ -204,6 +205,7 @@
         <td>${p.nakshatra}</td>
         <td>${p.nakshatraPada}</td>
         <td>${p.navamsaSign}</td>
+        <td class="${dignityClass}">${p.dignity || '—'}</td>
         <td>${statusTags || '—'}</td>
       `;
       tbody.appendChild(tr);
