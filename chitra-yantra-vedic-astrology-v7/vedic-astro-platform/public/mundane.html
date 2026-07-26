@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>World Events — Chitra Yantra</title>
+<meta name="description" content="Mundane astrology research workspace — significators, live transits, and your own research notes, organized by theme." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<div class="starfield" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__brand">
+    <span class="topbar__glyph">&#9737;</span>
+    <div class="topbar__title">
+      <span class="topbar__name">CHITRA YANTRA</span>
+      <span class="topbar__sub">Vedic &amp; Mundane Research Terminal</span>
+    </div>
+  </div>
+  <nav class="topbar__nav">
+    <a href="/index.html" class="topbar__link">Birth Chart</a>
+    <a href="/transit.html" class="topbar__link">Transit Dashboard</a>
+    <a href="/countries.html" class="topbar__link">Countries</a>
+    <a href="/mundane.html" class="topbar__link topbar__link--active">World Events</a>
+    <a href="/reports.html" class="topbar__link">Reports</a>
+  </nav>
+  <div class="topbar__clock">
+    <div class="clock__row"><span class="clock__label">UTC</span><span class="clock__value" id="clockUTC">--:--:--</span></div>
+    <div class="clock__row"><span class="clock__label">GAST</span><span class="clock__value" id="clockGAST">--:--:--</span></div>
+  </div>
+</header>
+
+<main class="layout layout--mundane">
+
+  <section class="panel panel--form" aria-label="World Events controls">
+    <h1 class="panel__title">World Events <span class="panel__title-alt">(Mundane Research)</span></h1>
+    <p class="panel__note">"Mundane" just means worldly/global here — nations and events, not personal readings. Configurations only; no predictions generated — the interpretation is yours.</p>
+
+    <div class="field">
+      <label for="refSelect">House reference (optional)</label>
+      <select id="refSelect" class="natal-box__select">
+        <option value="">None — sign positions only</option>
+        <option value="natal-moon">My Birth Chart — Moon (Chandra Lagna)</option>
+        <option value="natal-asc">My Birth Chart — Ascendant</option>
+      </select>
+      <div class="field__hint" id="refHint">Pick a reference to see which house each significator is transiting.</div>
+    </div>
+
+    <div class="category-list" id="categoryList"></div>
+  </section>
+
+  <section class="panel panel--result" aria-label="Category detail">
+    <div id="categoryDetail"></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>Ephemeris: astronomy-engine (pure JS) · Ayanāṁśa: Lahiri (Chitrapakṣa)</span>
+  <span>Research notes are saved to this browser only (localStorage) — not shared or uploaded anywhere.</span>
+</footer>
+
+<script src="/js/chart-render.js"></script>
+<script src="/js/significators-data.js"></script>
+<script src="/js/countries-data.js"></script>
+<script src="/js/mundane.js"></script>
+</body>
+</html>

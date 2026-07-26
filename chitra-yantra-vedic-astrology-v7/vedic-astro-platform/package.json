@@ -1,0 +1,17 @@
+{
+  "name": "chitra-yantra-vedic-astrology",
+  "version": "1.0.0",
+  "description": "Vedic & Mundane Astrology Research Platform — Netlify-native (serverless functions + pure-JS ephemeris)",
+  "private": true,
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "astronomy-engine": "^2.1.19",
+    "geo-tz": "^8.1.8",
+    "luxon": "^3.7.2"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}

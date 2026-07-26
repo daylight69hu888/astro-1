@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Transit Dashboard — Chitra Yantra</title>
+<meta name="description" content="Live sidereal planetary transits, viewed from the Moon (Chandra Lagna) — Vedic mundane research terminal." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<div class="starfield" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__brand">
+    <span class="topbar__glyph">&#9737;</span>
+    <div class="topbar__title">
+      <span class="topbar__name">CHITRA YANTRA</span>
+      <span class="topbar__sub">Vedic &amp; Mundane Research Terminal</span>
+    </div>
+  </div>
+  <nav class="topbar__nav">
+    <a href="/index.html" class="topbar__link">Birth Chart</a>
+    <a href="/transit.html" class="topbar__link topbar__link--active">Transit Dashboard</a>
+    <a href="/countries.html" class="topbar__link">Countries</a>
+    <a href="/mundane.html" class="topbar__link">World Events</a>
+    <a href="/reports.html" class="topbar__link">Reports</a>
+  </nav>
+  <div class="topbar__clock">
+    <div class="clock__row"><span class="clock__label">UTC</span><span class="clock__value" id="clockUTC">--:--:--</span></div>
+    <div class="clock__row"><span class="clock__label">GAST</span><span class="clock__value" id="clockGAST">--:--:--</span></div>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- ============ CONTROL PANEL ============ -->
+  <section class="panel panel--form" aria-label="Transit controls">
+    <h1 class="panel__title">Transit Dashboard</h1>
+    <p class="panel__note">Chandra Lagna (Moon-chart) transits — houses are counted from your natal Moon, not the Ascendant.</p>
+
+    <div class="natal-box" id="natalBox">
+      <div class="natal-box__empty" id="natalEmpty">
+        <p>No saved birth chart found on this device.</p>
+        <a href="/index.html" class="natal-box__link">Generate one in Birth Chart →</a>
+        <p class="natal-box__or">— or set a Moon sign manually to research any chart:</p>
+        <select id="manualMoonSign" class="natal-box__select">
+          <option value="">Select a sign…</option>
+        </select>
+      </div>
+      <div class="natal-box__loaded" id="natalLoaded" hidden>
+        <span class="natal-box__label">Natal Moon (Chandra Lagna)</span>
+        <span class="natal-box__value" id="natalMoonValue">—</span>
+        <button type="button" class="natal-box__clear" id="clearNatal">Use a different chart</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="transitDate">Date</label>
+      <input type="date" id="transitDate" />
+    </div>
+    <div class="field">
+      <label for="transitTime">Time (UTC, 24h)</label>
+      <input type="time" id="transitTime" step="1" />
+    </div>
+
+    <div class="field-row">
+      <button type="button" class="btn-secondary" id="useNowBtn">Use current moment</button>
+    </div>
+
+    <div class="field">
+      <label>Chart style</label>
+      <div class="toggle" id="styleToggle">
+        <button type="button" class="toggle__opt toggle__opt--active" data-style="north">North Indian</button>
+        <button type="button" class="toggle__opt" data-style="south">South Indian</button>
+      </div>
+    </div>
+
+    <button type="button" class="btn-primary" id="calcBtn"><span>Show Transit</span></button>
+    <div class="form__error" id="formError" hidden></div>
+  </section>
+
+  <!-- ============ RESULT PANEL ============ -->
+  <section class="panel panel--result" aria-label="Transit output">
+    <div class="result__empty" id="resultEmpty">
+      <div class="empty__ring"></div>
+      <p>Set your natal Moon (or load a saved chart), then show the transit.</p>
+    </div>
+
+    <div class="result__content" id="resultContent" hidden>
+      <div class="summary" id="summaryBar"></div>
+
+      <div class="chart-wrap">
+        <svg id="chartSvg" viewBox="0 0 300 300" class="chart-svg"></svg>
+      </div>
+      <div class="chart-legend">
+        <span><span class="retro">(R)</span> Retrograde</span>
+        <span>* Combust</span>
+        <span class="exalted">&#8593;</span><span> Exalted</span>
+        <span class="debilitated">&#8595;</span><span> Debilitated</span>
+      </div>
+
+
+      <h2 class="table__title">Transiting Planets <span class="table__title-sub">Sidereal · Lahiri Ayanāṁśa · from Chandra Lagna</span></h2>
+      <div class="table-wrap">
+        <table class="data-table" id="planetTable">
+          <thead>
+            <tr>
+              <th>Graha</th><th>Rāśi</th><th>Degree</th><th>House from Moon</th><th>Nakṣatra</th><th>Pada</th><th>Dignity</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="meta-strip" id="metaStrip"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>Ephemeris: astronomy-engine (pure JS) · Ayanāṁśa: Lahiri (Chitrapakṣa) · Geocentric — location-independent</span>
+  <span>For mundane / research purposes. Not a substitute for classical Shadbala or professional consultation.</span>
+</footer>
+
+<script src="/js/chart-render.js"></script>
+<script src="/js/transit.js"></script>
+</body>
+</html>

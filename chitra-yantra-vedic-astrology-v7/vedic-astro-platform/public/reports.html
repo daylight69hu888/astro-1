@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reports — Chitra Yantra</title>
+<meta name="description" content="Half-year and yearly mundane astrology reports — ingresses, stations, conjunctions, combustion, and eclipses, downloadable as PDF." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<div class="starfield" aria-hidden="true"></div>
+
+<header class="topbar no-print">
+  <div class="topbar__brand">
+    <span class="topbar__glyph">&#9737;</span>
+    <div class="topbar__title">
+      <span class="topbar__name">CHITRA YANTRA</span>
+      <span class="topbar__sub">Vedic &amp; Mundane Research Terminal</span>
+    </div>
+  </div>
+  <nav class="topbar__nav">
+    <a href="/index.html" class="topbar__link">Birth Chart</a>
+    <a href="/transit.html" class="topbar__link">Transit Dashboard</a>
+    <a href="/countries.html" class="topbar__link">Countries</a>
+    <a href="/mundane.html" class="topbar__link">World Events</a>
+    <a href="/reports.html" class="topbar__link topbar__link--active">Reports</a>
+  </nav>
+  <div class="topbar__clock">
+    <div class="clock__row"><span class="clock__label">UTC</span><span class="clock__value" id="clockUTC">--:--:--</span></div>
+    <div class="clock__row"><span class="clock__label">GAST</span><span class="clock__value" id="clockGAST">--:--:--</span></div>
+  </div>
+</header>
+
+<main class="layout layout--reports">
+
+  <section class="panel panel--form no-print" aria-label="Report controls">
+    <h1 class="panel__title">Reports</h1>
+    <p class="panel__note">Scans day-by-day across the range for ingresses, nakshatra shifts, stations, conjunctions, combustion, and eclipses.</p>
+
+    <div class="field">
+      <label for="rangePreset">Range</label>
+      <select id="rangePreset" class="natal-box__select">
+        <option value="h1">Half-Year: Jan – Jun</option>
+        <option value="h2">Half-Year: Jul – Dec</option>
+        <option value="year">Full Year</option>
+        <option value="custom">Custom range</option>
+      </select>
+    </div>
+    <div class="field" id="yearField">
+      <label for="reportYear">Year</label>
+      <input type="number" id="reportYear" value="2026" />
+    </div>
+    <div class="field-row" id="customRangeFields" hidden>
+      <div class="field"><label for="customStart">Start</label><input type="date" id="customStart" /></div>
+      <div class="field"><label for="customEnd">End</label><input type="date" id="customEnd" /></div>
+    </div>
+
+    <div class="field">
+      <label for="refSelect">House reference (optional)</label>
+      <select id="refSelect" class="natal-box__select">
+        <option value="">None — sign positions only</option>
+        <option value="natal-moon">My Birth Chart — Moon (Chandra Lagna)</option>
+        <option value="natal-asc">My Birth Chart — Ascendant</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Include event types</label>
+      <div class="checkbox-list">
+        <label><input type="checkbox" data-type="ingress" checked /> Sign ingresses</label>
+        <label><input type="checkbox" data-type="nakshatraIngress" /> Nakṣatra shifts (high volume — Moon shifts ~daily)</label>
+        <label><input type="checkbox" data-type="stationRetrograde,stationDirect" checked /> Retrograde / direct stations</label>
+        <label><input type="checkbox" data-type="conjunction" checked /> Conjunctions (within 1°)</label>
+        <label><input type="checkbox" data-type="combustionBegins,combustionEnds" /> Combustion begins/ends</label>
+        <label><input type="checkbox" data-type="lunarEclipse,solarEclipse" checked /> Eclipses</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="filterText">Filter by planet</label>
+      <input type="text" id="filterText" placeholder="e.g. Saturn, Rahu" />
+    </div>
+
+    <button type="button" class="btn-primary" id="generateBtn"><span>Generate Report</span></button>
+    <button type="button" class="btn-secondary" id="printBtn" style="margin-top:8px;" hidden>Download as PDF</button>
+    <div class="form__error" id="formError" hidden></div>
+  </section>
+
+  <section class="panel panel--result report-output" aria-label="Report output" id="reportOutput">
+    <div class="result__empty" id="resultEmpty">
+      <div class="empty__ring"></div>
+      <p>Choose a range and generate a report.</p>
+    </div>
+    <div id="reportContent"></div>
+  </section>
+
+</main>
+
+<footer class="footer no-print">
+  <span>Ephemeris: astronomy-engine (pure JS) · Ayanāṁśa: Lahiri (Chitrapakṣa) · Daily-resolution scan</span>
+  <span>Use your browser's Print dialog (from "Download as PDF") and choose "Save as PDF" as the destination.</span>
+</footer>
+
+<script src="/js/reports.js"></script>
+</body>
+</html>
