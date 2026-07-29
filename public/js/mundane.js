@@ -136,11 +136,24 @@
           </div>`).join('')
       : '<p class="panel__note">No notes yet for this category.</p>';
 
+    const reading = window.ChitraInterpretation.generateReading(cat.label, relevantPlanets);
+    const toneClass = reading.tone.label.startsWith('Supportive') ? 'tone-supportive' : reading.tone.label.startsWith('Strained') ? 'tone-strained' : 'tone-mixed';
+    const readingHtml = `
+      <div class="reading-box">
+        <div class="reading-box__header">
+          <span class="reading-box__title">Classical Reading</span>
+          <span class="reading-box__tone ${toneClass}">${reading.tone.label}</span>
+        </div>
+        <p class="reading-box__disclaimer">Rule-based, from named classical principles (dignity, retrograde, combustion, nakṣatra Gana) — not a forecast of real-world events. ${reading.tone.text}.</p>
+        <ul class="reading-box__list">${reading.lines.map((l) => `<li>${l}</li>`).join('')}</ul>
+      </div>`;
+
     categoryDetail.innerHTML = `
       <div class="country-header">
         <span class="country-header__name">${cat.label}</span>
         <span class="country-header__note">${cat.note}</span>
       </div>
+      ${readingHtml}
       <h2 class="table__title">Current Positions <span class="table__title-sub">as of ${snapshot.utcInstant.replace('T', ' ').replace('Z', ' Z')}</span></h2>
       <div class="table-wrap">
         <table class="data-table">
