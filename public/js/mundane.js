@@ -8,6 +8,9 @@
   let refLabel = '';
   let activeCategoryId = null;
   let currentSnapshot = null; // cached today's transit, fetched once
+  const upcomingCache = {}; // categoryId -> { planetName: nextEvent }
+
+  const LOOKAHEAD_DAYS = 90;
 
   // ---------- Live clock ----------
   function pad(n) { return String(n).padStart(2, '0'); }
@@ -82,6 +85,29 @@
     return data;
   }
 
+  // ---------- Fetch real upcoming events for a category's significator planets ----------
+  async function getUpcomingForCategory(cat) {
+    if (upcomingCache[cat.id]) return upcomingCache[cat.id];
+    const start = new Date();
+    const end = new Date(start.getTime() + LOOKAHEAD_DAYS * 86400000);
+    const iso = (d) => d.toISOString().slice(0, 10);
+    const res = await fetch('/.netlify/functions/scan', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ startDate: iso(start), endDate: iso(end) }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not scan upcoming events.');
+
+    const relevantTypes = ['ingress', 'nakshatraIngress', 'stationRetrograde', 'stationDirect'];
+    const nextByPlanet = {};
+    cat.planets.forEach((planetName) => {
+      const match = data.events.find((e) => e.planet === planetName && relevantTypes.includes(e.type));
+      nextByPlanet[planetName] = match || null;
+    });
+    upcomingCache[cat.id] = nextByPlanet;
+    return nextByPlanet;
+  }
+
   function fmtDeg(d) {
     const whole = Math.floor(d);
     const min = Math.floor((d - whole) * 60);
@@ -99,11 +125,11 @@
 
   async function renderCategoryDetail(catId) {
     const cat = window.CHITRA_SIGNIFICATORS.find((c) => c.id === catId);
-    categoryDetail.innerHTML = `<p class="panel__note">Loading current transits…</p>`;
+    categoryDetail.innerHTML = `<p class="panel__note">Loading current transits and scanning the next ${LOOKAHEAD_DAYS} days…</p>`;
 
-    let snapshot;
+    let snapshot, upcoming;
     try {
-      snapshot = await getSnapshot();
+      [snapshot, upcoming] = await Promise.all([getSnapshot(), getUpcomingForCategory(cat)]);
     } catch (e) {
       categoryDetail.innerHTML = `<p class="form__error" style="display:block;">${e.message}</p>`;
       return;
@@ -136,16 +162,16 @@
           </div>`).join('')
       : '<p class="panel__note">No notes yet for this category.</p>';
 
-    const reading = window.ChitraInterpretation.generateReading(cat.label, relevantPlanets);
-    const toneClass = reading.tone.label.startsWith('Supportive') ? 'tone-supportive' : reading.tone.label.startsWith('Strained') ? 'tone-strained' : 'tone-mixed';
+    const narrative = window.ChitraInterpretation.generateNarrative(relevantPlanets, upcoming, refSignIndex);
+    const toneClass = narrative.tone.label.startsWith('Supportive') ? 'tone-supportive' : narrative.tone.label.startsWith('Strained') ? 'tone-strained' : 'tone-mixed';
     const readingHtml = `
       <div class="reading-box">
         <div class="reading-box__header">
-          <span class="reading-box__title">Classical Reading</span>
-          <span class="reading-box__tone ${toneClass}">${reading.tone.label}</span>
+          <span class="reading-box__title">Classical Reading — now &amp; next ${LOOKAHEAD_DAYS} days</span>
+          <span class="reading-box__tone ${toneClass}">${narrative.tone.label}</span>
         </div>
-        <p class="reading-box__disclaimer">Rule-based, from named classical principles (dignity, retrograde, combustion, nakṣatra Gana) — not a forecast of real-world events. ${reading.tone.text}.</p>
-        <ul class="reading-box__list">${reading.lines.map((l) => `<li>${l}</li>`).join('')}</ul>
+        <p class="reading-box__disclaimer">Rule-based, from named classical principles plus real scanned dates — not a forecast of real-world events, and not trading guidance. ${narrative.tone.text}.</p>
+        ${narrative.paragraphs.map((p) => `<p style="margin:0 0 12px;line-height:1.6;color:var(--text);font-size:13.5px;">${p}</p>`).join('')}
       </div>`;
 
     categoryDetail.innerHTML = `
