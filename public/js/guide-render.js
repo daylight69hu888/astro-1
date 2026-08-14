@@ -28,6 +28,8 @@
     }
 
     const planets = saved.chart.planets;
+    const sunPlanet = planets.find((pl) => pl.name === 'Sun');
+
     const cardsHtml = PLANET_ORDER.map((name) => {
       const p = planets.find((pl) => pl.name === name);
       if (!p) return '';
@@ -38,11 +40,39 @@
           <p class="guide-card__theme">No write-up available for this placement yet.</p>
         </div>`;
       }
-      const posHtml = guide.positive.length
-        ? `<ul class="guide-card__list guide-card__list--pos">${guide.positive.map((x) => `<li>${x}</li>`).join('')}</ul>` : '';
-      const negHtml = guide.negative.length
-        ? `<ul class="guide-card__list guide-card__list--neg">${guide.negative.map((x) => `<li>${x}</li>`).join('')}</ul>` : '';
+
+      const introHtml = guide.intro ? `<p class="guide-card__intro">${guide.intro}</p>` : '';
+      const posHtml = guide.positive && guide.positive.length
+        ? `<div class="guide-card__section-label guide-card__section-label--pos">Positive</div><ul class="guide-card__list guide-card__list--pos">${guide.positive.map((x) => `<li>${x}</li>`).join('')}</ul>` : '';
+      const negHtml = guide.negative && guide.negative.length
+        ? `<div class="guide-card__section-label guide-card__section-label--neg">Caution</div><ul class="guide-card__list guide-card__list--neg">${guide.negative.map((x) => `<li>${x}</li>`).join('')}</ul>` : '';
+      const remedyHtml = guide.remedy ? `<p class="guide-card__remedy"><strong>Remedy:</strong> ${guide.remedy}</p>` : '';
       const badgeHtml = guide.badge ? `<span class="guide-card__badge">${guide.badge}</span>` : '';
+
+      const conditionalHtml = guide.conditional && guide.conditional.length
+        ? `<div class="guide-card__section-label guide-card__section-label--cond">If another planet is placed as follows</div>
+           <ul class="guide-card__list guide-card__list--cond">${guide.conditional.map((c) => `<li>${c.text}</li>`).join('')}</ul>`
+        : '';
+
+      const environmentalHtml = guide.environmental && guide.environmental.length
+        ? `<div class="guide-card__section-label guide-card__section-label--env">Environmental / Vastu markers</div>
+           <ul class="guide-card__list guide-card__list--env">${guide.environmental.map((x) => `<li>${x}</li>`).join('')}</ul>`
+        : '';
+
+      // Special case: Rahu in the 1st house depends entirely on where the Sun is placed
+      let sunPositionHtml = '';
+      if (guide.sunPosition && sunPlanet) {
+        const line = guide.sunPosition[sunPlanet.house];
+        sunPositionHtml = `<div class="guide-card__section-label guide-card__section-label--cond">Result based on your Sun's house (House ${sunPlanet.house})</div>
+          <p class="guide-card__conditional-result">${line || 'No specific write-up for this Sun house.'}</p>
+          <details class="guide-card__all-sun">
+            <summary>See all 12 Sun-house variants</summary>
+            <ul class="guide-card__list guide-card__list--cond">
+              ${Object.keys(guide.sunPosition).map((h) => `<li${Number(h) === sunPlanet.house ? ' class="guide-card__current-line"' : ''}>${guide.sunPosition[h]}</li>`).join('')}
+            </ul>
+          </details>`;
+      }
+
       return `
         <div class="guide-card ${toneClass(guide.tone)}">
           <div class="guide-card__head">
@@ -51,23 +81,25 @@
           </div>
           <p class="guide-card__theme">${guide.theme}</p>
           ${badgeHtml}
+          ${introHtml}
           ${posHtml}
           ${negHtml}
+          ${remedyHtml}
+          ${conditionalHtml}
+          ${environmentalHtml}
+          ${sunPositionHtml}
         </div>`;
     }).join('');
 
     container.innerHTML = `
       <h2 class="table__title" style="margin-top:28px;">Personal House-by-House Guide
-        <span class="table__title-sub">Planet placements interpreted by house \u2014 not conjunctions</span>
+        <span class="table__title-sub">Planet placements interpreted by house \u2014 including cross-planet conditions noted in the source material</span>
       </h2>
       <div class="guide-grid">${cardsHtml}</div>
     `;
   }
 
-  // Render once on load (covers "already generated earlier" case)...
   document.addEventListener('DOMContentLoaded', renderGuide);
-  // ...and again shortly after a new chart is calculated on this page, since app.js
-  // saves to localStorage asynchronously and this script doesn't hook into that flow directly.
   const form = document.getElementById('chartForm');
   if (form) {
     form.addEventListener('submit', () => { setTimeout(renderGuide, 1500); });
