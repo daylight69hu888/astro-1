@@ -2,8 +2,8 @@
 // astrology principles (dignity, retrograde, combustion, nakshatra Gana) plus real
 // upcoming ingress/nakshatra/station dates pulled from the scanner. No AI call, no
 // invented content — every line traces back to a named classical rule or an actual
-// computed date. Deliberately avoids trading directives ("buy/sell/hold") — it
-// describes classical associations and real upcoming dates; the call stays with you.
+// computed date. Surfaces a plain Bullish / Bearish / Neutral view (never "buy/sell")
+// so the read is quick, with the real upcoming date it changes on.
 // Also deliberately does NOT assign countries/regions to signs — classical geographic
 // rulership tables (Kalapurusha/Bhu-mandala schemes) vary significantly between
 // source texts and eras, and asserting one as authoritative would be misleading.
@@ -24,6 +24,27 @@
   };
   const GANA_SCORE = { Deva: 0.5, Manushya: 0, Rakshasa: -0.5 };
   const DIGNITY_SCORE = { Exalted: 2, 'Own Sign': 1, Neutral: 0, Debilitated: -2 };
+
+  // Sign-level dignity lookup — used to preview the view once a planet reaches an
+  // upcoming ingress sign (so the timeline can flag "turns bullish/bearish there").
+  const EXALTATION_SIGN = { Sun: 'Aries', Moon: 'Taurus', Mars: 'Capricorn', Mercury: 'Virgo', Jupiter: 'Cancer', Venus: 'Pisces', Saturn: 'Libra' };
+  const DEBILITATION_SIGN = { Sun: 'Libra', Moon: 'Scorpio', Mars: 'Cancer', Mercury: 'Pisces', Jupiter: 'Capricorn', Venus: 'Virgo', Saturn: 'Aries' };
+  const OWN_SIGNS = {
+    Sun: ['Leo'], Moon: ['Cancer'], Mars: ['Aries', 'Scorpio'], Mercury: ['Gemini', 'Virgo'],
+    Jupiter: ['Sagittarius', 'Pisces'], Venus: ['Taurus', 'Libra'], Saturn: ['Capricorn', 'Aquarius'],
+  };
+  function dignityAt(planetName, sign) {
+    if (EXALTATION_SIGN[planetName] === sign) return 'Exalted';
+    if (DEBILITATION_SIGN[planetName] === sign) return 'Debilitated';
+    if (OWN_SIGNS[planetName] && OWN_SIGNS[planetName].includes(sign)) return 'Own Sign';
+    if (EXALTATION_SIGN[planetName]) return 'Neutral';
+    return null;
+  }
+  function viewHintForDignity(dignity) {
+    if (dignity === 'Exalted' || dignity === 'Own Sign') return { label: 'Bullish', cls: 'view-bullish' };
+    if (dignity === 'Debilitated') return { label: 'Bearish', cls: 'view-bearish' };
+    return null;
+  }
 
   const DIGNITY_TEXT = {
     Exalted: (p) => `${p} is exalted — classically at full strength, expressing its significations most directly`,
@@ -47,9 +68,9 @@
   }
   function toneFromScore(total, count) {
     const avg = count ? total / count : 0;
-    if (avg >= 1) return { label: 'Supportive lean', text: 'the classical strength indicators lean supportive for this theme right now' };
-    if (avg <= -1) return { label: 'Strained lean', text: 'the classical strength indicators lean strained/cautious for this theme right now' };
-    return { label: 'Mixed / neutral', text: 'the classical strength indicators are mixed, with no strong lean either way' };
+    if (avg >= 1) return { label: 'Bullish', text: 'the classical strength indicators lean bullish for this theme right now' };
+    if (avg <= -1) return { label: 'Bearish', text: 'the classical strength indicators lean bearish for this theme right now' };
+    return { label: 'Neutral', text: 'the classical strength indicators are mixed, with no strong lean either way' };
   }
 
   // ---------- Original bullet-style reading (kept for anywhere it's still used) ----------
@@ -77,7 +98,7 @@
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
   }
 
-  function nextEventPhrase(ev, refSignIndex) {
+  function nextEventPhrase(ev, refSignIndex, planetName) {
     if (!ev) return `No sign, nakṣatra, or station change is expected within the lookahead window.`;
     const when = fmtDate(ev.date);
     if (ev.type === 'ingress') {
@@ -86,7 +107,10 @@
         const house = ((ev.toSignIndex - refSignIndex + 12) % 12) + 1;
         houseNote = `, moving into house ${house} from your reference`;
       }
-      return `It stays in ${ev.fromSign} until around ${when}, then crosses into ${ev.toSign}${houseNote} — worth watching around that date.`;
+      const futureDignity = planetName ? dignityAt(planetName, ev.toSign) : null;
+      const hint = viewHintForDignity(futureDignity);
+      const hintNote = hint ? ` — turns <span class="${hint.cls}">${hint.label}</span> there` : '';
+      return `It stays in ${ev.fromSign} until around ${when}, then crosses into ${ev.toSign}${houseNote}${hintNote}.`;
     }
     if (ev.type === 'nakshatraIngress') {
       return `It shifts nakṣatra around ${when}, moving into ${ev.toNakshatra} (lord ${ev.nakshatraLord}, pada ${ev.pada}).`;
@@ -113,7 +137,7 @@
       if (p.combust) bits.push('currently combust, so acting in a subdued or dependent way rather than independently');
       const ganaTxt = p.nakshatra && NAKSHATRA_GANA[p.nakshatra] ? `, moving through ${p.nakshatra} nakṣatra (${GANA_TEXT[NAKSHATRA_GANA[p.nakshatra]]})` : '';
       const now = `${bits.join(', ')}${ganaTxt}.`;
-      const next = nextEventPhrase(upcomingByPlanet[p.name], refSignIndex);
+      const next = nextEventPhrase(upcomingByPlanet[p.name], refSignIndex, p.name);
       return `<strong>${p.name}</strong> \u2014 ${now} ${next}`;
     });
     let total = 0;
@@ -122,5 +146,5 @@
     return { tone, paragraphs };
   }
 
-  window.ChitraInterpretation = { generateReading, generateNarrative, NAKSHATRA_GANA, GANA_TEXT };
+  window.ChitraInterpretation = { generateReading, generateNarrative, NAKSHATRA_GANA, GANA_TEXT, dignityAt, viewHintForDignity };
 })();
