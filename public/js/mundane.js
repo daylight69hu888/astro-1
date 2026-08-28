@@ -163,16 +163,52 @@
       : '<p class="panel__note">No notes yet for this category.</p>';
 
     const narrative = window.ChitraInterpretation.generateNarrative(relevantPlanets, upcoming, refSignIndex);
-    const toneClass = narrative.tone.label.startsWith('Supportive') ? 'tone-supportive' : narrative.tone.label.startsWith('Strained') ? 'tone-strained' : 'tone-mixed';
+    const toneClass = narrative.tone.label === 'Bullish' ? 'tone-supportive' : narrative.tone.label === 'Bearish' ? 'tone-strained' : 'tone-mixed';
     const readingHtml = `
       <div class="reading-box">
         <div class="reading-box__header">
-          <span class="reading-box__title">Classical Reading — now &amp; next ${LOOKAHEAD_DAYS} days</span>
+          <span class="reading-box__title">Current View — next ${LOOKAHEAD_DAYS} days</span>
           <span class="reading-box__tone ${toneClass}">${narrative.tone.label}</span>
         </div>
-        <p class="reading-box__disclaimer">Rule-based, from named classical principles plus real scanned dates — not a forecast of real-world events, and not trading guidance. ${narrative.tone.text}.</p>
+        <p class="reading-box__disclaimer">Rule-based, from classical dignity/retrograde/nakṣatra strength plus real upcoming dates — not investment advice.</p>
         ${narrative.paragraphs.map((p) => `<p style="margin:0 0 12px;line-height:1.6;color:var(--text);font-size:13.5px;">${p}</p>`).join('')}
       </div>`;
+
+    // ---------- Strategy box: positioning + volatility flag + real Accumulation/Risk windows ----------
+    const strategy = window.ChitraStrategy.buildStrategyBox(relevantPlanets, upcoming, narrative.tone.label);
+    const windowRows = strategy.windows.length
+      ? strategy.windows.map((w) => `<div class="strategy-box__line"><span class="strategy-box__tag ${w.cls}">${w.type}</span><span>${w.note}</span></div>`).join('')
+      : `<div class="strategy-box__line"><span class="strategy-box__tag">—</span><span>No dignity shift is due for these significators within the next ${LOOKAHEAD_DAYS} days.</span></div>`;
+    const strategyHtml = `
+      <div class="reading-box" style="margin-top:16px;">
+        <div class="reading-box__header">
+          <span class="reading-box__title">Strategy</span>
+          <span class="strategy-box__tag ${strategy.positioning.cls}">${strategy.positioning.tag}</span>
+        </div>
+        <p style="margin:0 0 12px;line-height:1.6;color:var(--text);font-size:13.5px;">${strategy.positioning.text}</p>
+        ${strategy.volatility.flag ? `<p style="margin:0 0 12px;"><span class="strategy-box__tag view-bearish">Elevated Volatility</span> <span style="font-size:13.5px;color:var(--text-dim);">${strategy.volatility.reasons.join(', ')} right now — expect sharper, choppier moves than usual.</span></p>` : ''}
+        ${windowRows}
+      </div>`;
+
+    // ---------- Sector mapping (reference table, only for categories that have one) ----------
+    const sectorHtml = cat.sectors ? `
+      <h2 class="table__title" style="margin-top:24px;">Sector Mapping</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Sector</th><th>Ruling Graha</th><th>Note</th></tr></thead>
+          <tbody>${cat.sectors.map((s) => `<tr><td>${s.name}</td><td>${s.ruler}</td><td>${s.note}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>` : '';
+
+    // ---------- Historical precedents (static reference table) ----------
+    const precedentsHtml = cat.historicalPrecedents ? `
+      <h2 class="table__title" style="margin-top:24px;">Historical Precedents</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Era</th><th>Note</th></tr></thead>
+          <tbody>${cat.historicalPrecedents.map((h) => `<tr><td>${h.era}</td><td>${h.note}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>` : '';
 
     categoryDetail.innerHTML = `
       <div class="country-header">
@@ -180,13 +216,16 @@
         <span class="country-header__note">${cat.note}</span>
       </div>
       ${readingHtml}
-      <h2 class="table__title">Current Positions <span class="table__title-sub">as of ${snapshot.utcInstant.replace('T', ' ').replace('Z', ' Z')}</span></h2>
+      ${strategyHtml}
+      ${sectorHtml}
+      <h2 class="table__title" style="margin-top:24px;">Current Positions <span class="table__title-sub">as of ${snapshot.utcInstant.replace('T', ' ').replace('Z', ' Z')}</span></h2>
       <div class="table-wrap">
         <table class="data-table">
           <thead><tr><th>Graha</th><th>Rāśi</th><th>Degree</th><th>House</th><th>Nakṣatra</th><th>Dignity</th><th>Status</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
+      ${precedentsHtml}
 
       <h2 class="table__title" style="margin-top:24px;">Research Notes</h2>
       <textarea id="noteInput" class="note-input" placeholder="Write your own observations for this category…"></textarea>
