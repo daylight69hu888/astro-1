@@ -44,6 +44,11 @@ function svgEl(tag, attrs) {
   Object.entries(attrs || {}).forEach(([k, v]) => el.setAttribute(k, v));
   return el;
 }
+function fmtDeg(d) {
+  const whole = Math.floor(d);
+  const min = Math.floor((d - whole) * 60);
+  return `${whole}\u00B0${String(min).padStart(2, '0')}'`;
+}
 function polyPoints(pts) { return pts.map((p) => p.join(',')).join(' '); }
 function centroid(pts) {
   let x = 0, y = 0;
@@ -65,8 +70,11 @@ function planetGlyphLine(planetsHere) {
     let dignityMark = '';
     if (p.dignity === 'Exalted') dignityMark = '\u2191';       // ↑
     else if (p.dignity === 'Debilitated') dignityMark = '\u2193'; // ↓
+    // degreeInSign is only meaningful for the Rāśi (D1) view — same reason the
+    // dignity ↑/↓ marks above are D1-only (see groupPlanetsByHouse).
+    const degText = (p.degreeInSign !== null && p.degreeInSign !== undefined) ? ' ' + fmtDeg(p.degreeInSign) : '';
     return {
-      text: p.abbr + dignityMark + (p.retrograde ? '(R)' : '') + (p.combust ? '*' : ''),
+      text: p.abbr + degText + dignityMark + (p.retrograde ? '(R)' : '') + (p.combust ? '*' : ''),
       retro: p.retrograde,
     };
   });
@@ -76,7 +84,7 @@ function drawPlanetBlock(svg, cx, cy, lines, perRow) {
   const textEl = svgEl('text', { x: cx, y: cy, class: 'house-planets', 'text-anchor': 'middle' });
   const rows = [];
   for (let i = 0; i < lines.length; i += perRow) rows.push(lines.slice(i, i + perRow));
-  const rowGap = 12;
+  const rowGap = 10;
   const startDy = rows.length > 1 ? -((rows.length - 1) * rowGap) / 2 : 0;
   rows.forEach((row, ri) => {
     const tspan = svgEl('tspan', { x: cx, dy: ri === 0 ? startDy : rowGap });
@@ -111,6 +119,7 @@ function groupPlanetsByHouse(chart, useNavamsa, ascSignIdx) {
       retrograde: p.retrograde,
       combust: p.combust,
       dignity: useNavamsa ? null : p.dignity,
+      degreeInSign: useNavamsa ? null : p.degreeInSign,
     });
   });
   return byHouse;
@@ -141,7 +150,7 @@ function renderNorthIndian(svg, chart, useNavamsa) {
     })).textContent = String(signIdx + 1);
 
     const lines = planetGlyphLine(byHouse[logicalHouse]);
-    drawPlanetBlock(svg, planetPos[0], planetPos[1] + 3, lines, 3);
+    drawPlanetBlock(svg, planetPos[0], planetPos[1] + 3, lines, 1);
 
     if (wedge === 1) {
       svg.appendChild(svgEl('circle', { cx: 150, cy: 8, r: 2.4, class: 'house-asc-marker' }));
@@ -173,7 +182,7 @@ function renderSouthIndian(svg, chart, useNavamsa) {
 
       const houseNum = ((signIdx - ascSignIdx + 12) % 12) + 1;
       const lines = planetGlyphLine(byHouse[houseNum]);
-      drawPlanetBlock(svg, x + CELL / 2, y + CELL / 2 + 6, lines, 2);
+      drawPlanetBlock(svg, x + CELL / 2, y + CELL / 2 + 6, lines, 1);
     }
   }
   svg.appendChild(svgEl('rect', { x: 0, y: 0, width: 300, height: 300, class: 'house-outline' }));
