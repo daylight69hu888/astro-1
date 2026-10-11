@@ -38,7 +38,7 @@
 
   <section class="panel panel--form no-print" aria-label="Report controls">
     <h1 class="panel__title">Reports</h1>
-    <p class="panel__note">Scans day-by-day across the range for ingresses, nakshatra shifts, stations, conjunctions, combustion, and eclipses.</p>
+    <p class="panel__note">Scans day-by-day across the range, then builds a full planet + sign + nakṣatra prediction report across geopolitics, markets, metals, crypto, macro, disasters, and society — or switch to the raw event list.</p>
 
     <div class="field">
       <label for="rangePreset">Range</label>
@@ -68,20 +68,30 @@
     </div>
 
     <div class="field">
-      <label>Include event types</label>
-      <div class="checkbox-list">
-        <label><input type="checkbox" data-type="ingress" checked /> Sign ingresses</label>
-        <label><input type="checkbox" data-type="nakshatraIngress" /> Nakṣatra shifts (high volume — Moon shifts ~daily)</label>
-        <label><input type="checkbox" data-type="stationRetrograde,stationDirect" checked /> Retrograde / direct stations</label>
-        <label><input type="checkbox" data-type="conjunction" checked /> Conjunctions (within 1°)</label>
-        <label><input type="checkbox" data-type="combustionBegins,combustionEnds" /> Combustion begins/ends</label>
-        <label><input type="checkbox" data-type="lunarEclipse,solarEclipse" checked /> Eclipses</label>
+      <label>Report type</label>
+      <div class="toggle">
+        <button type="button" class="toggle__opt toggle__opt--active" id="modeNarrativeBtn">Narrative Prediction</button>
+        <button type="button" class="toggle__opt" id="modeEventListBtn">Raw Event List</button>
       </div>
     </div>
 
-    <div class="field">
-      <label for="filterText">Filter by planet</label>
-      <input type="text" id="filterText" placeholder="e.g. Saturn, Rahu" />
+    <div id="eventListControls" hidden>
+      <div class="field">
+        <label>Include event types</label>
+        <div class="checkbox-list">
+          <label><input type="checkbox" data-type="ingress" checked /> Sign ingresses</label>
+          <label><input type="checkbox" data-type="nakshatraIngress" /> Nakṣatra shifts (high volume — Moon shifts ~daily)</label>
+          <label><input type="checkbox" data-type="stationRetrograde,stationDirect" checked /> Retrograde / direct stations</label>
+          <label><input type="checkbox" data-type="conjunction" checked /> Conjunctions (within 1°)</label>
+          <label><input type="checkbox" data-type="combustionBegins,combustionEnds" /> Combustion begins/ends</label>
+          <label><input type="checkbox" data-type="lunarEclipse,solarEclipse" checked /> Eclipses</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="filterText">Filter by planet</label>
+        <input type="text" id="filterText" placeholder="e.g. Saturn, Rahu" />
+      </div>
     </div>
 
     <button type="button" class="btn-primary" id="generateBtn"><span>Generate Report</span></button>
@@ -104,6 +114,9 @@
   <span>Use your browser's Print dialog (from "Download as PDF") and choose "Save as PDF" as the destination.</span>
 </footer>
 
+<script src="/js/interpretation.js"></script>
+<script src="/js/prediction-framework.js"></script>
+<script src="/js/reports-narrative.js"></script>
 <script src="/js/reports.js"></script>
 </body>
 </html>
