@@ -15,7 +15,31 @@
 
   let lastEvents = null;
   let lastRangeLabel = '';
+  let lastRangeStart = '';
+  let lastRangeEnd = '';
+  let lastInitialPlanets = null;
   let refSignIndex = null;
+  let reportMode = 'narrative'; // 'narrative' | 'eventList'
+
+  const modeNarrativeBtn = document.getElementById('modeNarrativeBtn');
+  const modeEventListBtn = document.getElementById('modeEventListBtn');
+  const eventListControls = document.getElementById('eventListControls');
+  if (modeNarrativeBtn && modeEventListBtn) {
+    modeNarrativeBtn.addEventListener('click', () => {
+      reportMode = 'narrative';
+      modeNarrativeBtn.classList.add('toggle__opt--active');
+      modeEventListBtn.classList.remove('toggle__opt--active');
+      if (eventListControls) eventListControls.hidden = true;
+      if (lastEvents) renderReport();
+    });
+    modeEventListBtn.addEventListener('click', () => {
+      reportMode = 'eventList';
+      modeEventListBtn.classList.add('toggle__opt--active');
+      modeNarrativeBtn.classList.remove('toggle__opt--active');
+      if (eventListControls) eventListControls.hidden = false;
+      if (lastEvents) renderReport();
+    });
+  }
 
   // ---------- Live clock ----------
   function pad(n) { return String(n).padStart(2, '0'); }
@@ -100,6 +124,22 @@
   }
 
   function renderReport() {
+    if (reportMode === 'narrative') {
+      renderNarrativeReport();
+    } else {
+      renderEventListReport();
+    }
+  }
+
+  function renderNarrativeReport() {
+    if (!lastInitialPlanets) {
+      reportContent.innerHTML = `<h1 class="report-title">${lastRangeLabel}</h1><p class="panel__note">Could not load the range-start snapshot needed for the narrative report \u2014 try generating again.</p>`;
+      return;
+    }
+    reportContent.innerHTML = window.ChitraNarrativeReport.generate(lastEvents, lastInitialPlanets, lastRangeStart, lastRangeEnd, lastRangeLabel);
+  }
+
+  function renderEventListReport() {
     const types = activeTypes();
     const filterQ = filterText.value.trim().toLowerCase();
     const filtered = lastEvents.filter((e) => {
@@ -144,17 +184,28 @@
       return;
     }
     lastRangeLabel = label;
+    lastRangeStart = start;
+    lastRangeEnd = end;
 
     generateBtn.disabled = true;
     generateBtn.querySelector('span').textContent = 'Scanning…';
     try {
-      const res = await fetch('/.netlify/functions/scan', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startDate: start, endDate: end }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Scan failed.');
+      const [scanRes, snapRes] = await Promise.all([
+        fetch('/.netlify/functions/scan', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ startDate: start, endDate: end }),
+        }),
+        fetch('/.netlify/functions/transit', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ utcISO: `${start}T00:00:00.000Z` }),
+        }),
+      ]);
+      const data = await scanRes.json();
+      if (!scanRes.ok) throw new Error(data.error || 'Scan failed.');
+      const snapData = await snapRes.json();
+      if (!snapRes.ok) throw new Error(snapData.error || 'Range-start snapshot failed.');
       lastEvents = data.events;
+      lastInitialPlanets = snapData.planets;
       resultEmpty.hidden = true;
       printBtn.hidden = false;
       renderReport();
