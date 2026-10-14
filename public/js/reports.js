@@ -19,7 +19,9 @@
   let lastRangeEnd = '';
   let lastInitialPlanets = null;
   let refSignIndex = null;
+  let refLabel = '';
   let reportMode = 'narrative'; // 'narrative' | 'eventList'
+  const SIGNS = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
 
   const modeNarrativeBtn = document.getElementById('modeNarrativeBtn');
   const modeEventListBtn = document.getElementById('modeEventListBtn');
@@ -67,7 +69,7 @@
 
   refSelect.addEventListener('change', () => {
     const v = refSelect.value;
-    if (v === '') { refSignIndex = null; return; }
+    if (v === '') { refSignIndex = null; refLabel = ''; return; }
     try {
       const raw = localStorage.getItem('chitraYantra.lastBirthChart');
       if (!raw) { alert('No saved birth chart found — generate one in Birth Chart first.'); refSelect.value = ''; return; }
@@ -75,6 +77,7 @@
       refSignIndex = v === 'natal-moon'
         ? saved.chart.planets.find((p) => p.name === 'Moon').signIndex
         : saved.chart.ascendant.signIndex;
+      refLabel = v === 'natal-moon' ? 'your natal Moon sign' : 'your natal Ascendant';
     } catch (e) {
       alert('Could not read saved birth chart.');
       refSelect.value = '';
