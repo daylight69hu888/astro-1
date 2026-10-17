@@ -279,23 +279,15 @@ input::-webkit-calendar-picker-indicator { filter: invert(0.7) sepia(1) saturate
 .strategy-box__line:first-of-type { border-top: none; }
 
 /* ---------------- Narrative Prediction report (Reports page) ---------------- */
-.narrative-overview {
-  border: 1px solid var(--hairline-strong); border-radius: var(--radius);
-  background: var(--panel-raised); padding: 16px 20px; margin: 10px 0 24px;
+.narrative-flow__p {
+  font-size: 13.5px; line-height: 1.75; color: var(--text-dim);
+  margin: 0 0 16px;
 }
-.narrative-overview__text { font-size: 14px; line-height: 1.7; color: var(--text); margin: 8px 0 0; }
-
-.narrative-section { padding: 14px 0; border-top: 1px solid var(--hairline); }
-.narrative-section:first-of-type { border-top: none; }
-.narrative-section__title { font-family: var(--font-display); font-size: 15px; color: var(--brass-bright); margin: 0 0 6px; }
-.narrative-section__text { font-size: 13.5px; line-height: 1.7; color: var(--text-dim); margin: 0; }
+.narrative-flow__p strong { color: var(--brass-bright); font-weight: 600; }
 
 @media print {
-  .narrative-overview { border-color: #ccc; background: #fff; }
-  .narrative-overview__text { color: #222; }
-  .narrative-section { border-color: #ddd; break-inside: avoid; }
-  .narrative-section__title { color: #111; }
-  .narrative-section__text { color: #222; }
+  .narrative-flow__p { color: #222; }
+  .narrative-flow__p strong { color: #000; }
 }
 
 .meta-strip {
