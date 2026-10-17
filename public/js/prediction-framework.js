@@ -12,15 +12,18 @@
   const PLANET_INFO = {
     Sun: { karaka: 'gold, national governments, heads of state, central banks and sovereign bonds' },
     Moon: { karaka: 'public sentiment and mass psychology, fast-moving liquidity, FMCG and agricultural demand' },
-    Mars: { karaka: 'the trigger for sudden events — military action, conflict, crude oil, real estate stress and sharp volatility' },
+    Mars: { karaka: 'sudden events — conflict, crude oil, real estate stress and sharp volatility' },
     Mercury: { karaka: 'trade, communication, banking transactions and IT/technology activity' },
-    Jupiter: { karaka: 'wealth creation, fiat currency strength, silver, inflation trends, the banking sector and broad bullish sentiment' },
+    Jupiter: { karaka: 'wealth creation, currency strength, silver, inflation trends, banking and broad optimism' },
     Venus: { karaka: 'currency valuation, luxury and auto demand, and consumption-led capital flow' },
-    Saturn: { karaka: 'debt, bond yields, heavy industry, real estate, the working class and supply chains — the classical bear-market/restriction factor' },
-    Rahu: { karaka: 'tech and crypto bubbles, artificial intelligence, foreign affairs, speculation, and sudden chaotic spikes or crashes' },
-    Ketu: { karaka: 'decentralization, cryptocurrencies, bankruptcies, and sudden resets or market bottoms' },
+    Saturn: { karaka: 'debt, bond yields, heavy industry, real estate, the working class and supply chains' },
+    Rahu: { karaka: 'tech and crypto bubbles, AI, foreign affairs, speculation, and sudden chaotic spikes or crashes' },
+    Ketu: { karaka: 'decentralization, cryptocurrencies, bankruptcies, and sudden resets or bottoms' },
   };
-  const MAJOR_PLANETS = ['Sun', 'Mars', 'Jupiter', 'Saturn', 'Rahu', 'Ketu'];
+  // All eight tracked planets (Moon excluded — no reference guide was provided for it,
+  // and it moves too fast for anything beyond daily noise). reports-narrative.js
+  // decides per-planet whether to report at sign-level or nakṣatra-level detail.
+  const MAJOR_PLANETS = ['Sun', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Rahu', 'Ketu'];
 
   // ---------- 2. The 12 signs & sectors (the "where") ----------
   const SIGN_INFO = {
@@ -89,8 +92,24 @@
     { key: 'society', label: 'Human Life & Society', planets: ['Moon', 'Rahu', 'Jupiter', 'Saturn', 'Ketu'], angle: 'public mood and the tenor of daily life through this window' },
   ];
 
+  // ---------- 6. House themes (used when a birth-chart house reference is selected) ----------
+  const HOUSE_THEME = {
+    1: 'yourself, your health and your general direction',
+    2: 'your wealth, savings and family',
+    3: 'your courage, effort and close relationships',
+    4: 'your home, property and peace of mind',
+    5: 'your creativity, investments/speculation and children',
+    6: 'your health, debts, work and disputes',
+    7: 'your partnerships, marriage and business deals',
+    8: 'sudden change, shared resources and transformation',
+    9: 'your luck, higher learning and long journeys',
+    10: 'your career, status and public standing',
+    11: 'your income, gains and networks',
+    12: 'your expenses, rest and anything unseen/foreign',
+  };
+
   window.ChitraPredictionFramework = {
     PLANET_INFO, MAJOR_PLANETS, SIGN_INFO, NAKSHATRA_TRIGGER, NAKSHATRA_ORDER, LORD_CYCLE,
-    lordOfNakshatra, inGandanta, CATEGORY_DEF,
+    lordOfNakshatra, inGandanta, CATEGORY_DEF, HOUSE_THEME,
   };
 })();
